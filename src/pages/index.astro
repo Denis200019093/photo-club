@@ -1,0 +1,99 @@
+---
+import { getCollection } from 'astro:content';
+import Layout from '../layouts/Layout.astro';
+import FilterBar from '../components/FilterBar.astro';
+import PhotoCard from '../components/PhotoCard.astro';
+import Lightbox from '../components/Lightbox.astro';
+
+const photos = await getCollection('photos');
+const members = await getCollection('members');
+
+const sorted = photos.sort((a, b) =>
+  new Date(b.data.date).getTime() - new Date(a.data.date).getTime()
+);
+
+const authorMap = Object.fromEntries(
+  members.map(m => [m.slug, m.data.name])
+);
+
+const filterAuthors = members.map(m => ({
+  slug: m.slug,
+  name: m.data.name,
+}));
+---
+
+<Layout title="Галерея">
+
+  <section class="max-w-7xl mx-auto px-6 pt-16 pb-10">
+    <div class="flex flex-col sm:flex-row sm:items-end justify-between gap-6">
+      <div>
+        <p class="font-mono text-xs text-film-400 uppercase tracking-[0.2em] mb-3">Вінницький фотоклуб</p>
+        <h1 class="font-display text-5xl sm:text-6xl font-semibold leading-none text-film-950">
+          Галерея
+        </h1>
+        <p class="font-body text-film-500 mt-3 text-base max-w-md">
+          {photos.length} робіт · {members.length} фотографи
+        </p>
+      </div>
+      <FilterBar authors={filterAuthors} />
+    </div>
+  </section>
+
+  <div class="max-w-7xl mx-auto px-6">
+    <div class="border-t border-film-200" />
+  </div>
+
+  <section class="max-w-7xl mx-auto px-6 py-10">
+    <div id="gallery" class="masonry-gallery">
+      {sorted.map((photo) => (
+        <PhotoCard
+          title={photo.data.title}
+          author={photo.data.author}
+          authorName={authorMap[photo.data.author] ?? photo.data.author}
+          image={photo.data.image}
+          category={photo.data.category}
+        />
+      ))}
+    </div>
+  </section>
+
+  <Lightbox />
+
+</Layout>
+
+<style>
+  .masonry-gallery {
+    columns: 2;
+    column-gap: 12px;
+  }
+  @media (min-width: 640px)  { .masonry-gallery { columns: 3; } }
+  @media (min-width: 1024px) { .masonry-gallery { columns: 4; } }
+
+  .masonry-gallery :global(.photo-card) {
+    break-inside: avoid;
+    margin-bottom: 12px;
+    display: block;
+  }
+
+  .masonry-gallery :global([data-author]) {
+    animation: fadeUp 0.5s ease both;
+  }
+  .masonry-gallery :global([data-author]:nth-child(1))  { animation-delay: 0.04s; }
+  .masonry-gallery :global([data-author]:nth-child(2))  { animation-delay: 0.08s; }
+  .masonry-gallery :global([data-author]:nth-child(3))  { animation-delay: 0.12s; }
+  .masonry-gallery :global([data-author]:nth-child(4))  { animation-delay: 0.16s; }
+  .masonry-gallery :global([data-author]:nth-child(5))  { animation-delay: 0.20s; }
+  .masonry-gallery :global([data-author]:nth-child(6))  { animation-delay: 0.24s; }
+  .masonry-gallery :global([data-author]:nth-child(7))  { animation-delay: 0.28s; }
+  .masonry-gallery :global([data-author]:nth-child(8))  { animation-delay: 0.32s; }
+  .masonry-gallery :global([data-author]:nth-child(9))  { animation-delay: 0.36s; }
+  .masonry-gallery :global([data-author]:nth-child(10)) { animation-delay: 0.40s; }
+  .masonry-gallery :global([data-author]:nth-child(11)) { animation-delay: 0.44s; }
+  .masonry-gallery :global([data-author]:nth-child(12)) { animation-delay: 0.48s; }
+  .masonry-gallery :global([data-author]:nth-child(13)) { animation-delay: 0.52s; }
+
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(16px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+</style>

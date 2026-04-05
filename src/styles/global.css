@@ -1,0 +1,68 @@
+@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400;1,600&family=DM+Sans:wght@300;400;500&family=DM+Mono:wght@400;500&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  html {
+    font-family: 'DM Sans', sans-serif;
+    scroll-behavior: smooth;
+  }
+
+  body {
+    @apply bg-film-50 text-film-950;
+  }
+}
+
+@layer components {
+  .photo-card {
+    @apply relative overflow-hidden cursor-pointer;
+  }
+
+  .photo-card img {
+    @apply w-full h-full object-cover transition-transform duration-700 ease-in-out;
+  }
+
+  .photo-card:hover img {
+    @apply scale-105;
+  }
+
+  .photo-card .overlay {
+    @apply absolute inset-0 bg-film-950/0 transition-all duration-500 flex items-end;
+  }
+
+  .photo-card:hover .overlay {
+    @apply bg-film-950/40;
+  }
+
+  .photo-card .overlay-content {
+    @apply translate-y-full transition-transform duration-500 p-4 w-full;
+  }
+
+  .photo-card:hover .overlay-content {
+    @apply translate-y-0;
+  }
+
+  .filter-btn {
+    @apply px-4 py-1.5 text-sm font-body border border-film-300 text-film-700 
+           transition-all duration-200 cursor-pointer select-none
+           hover:border-film-500 hover:text-film-900;
+  }
+
+  .filter-btn.active {
+    @apply bg-film-950 text-film-50 border-film-950;
+  }
+}
+
+/* Grain texture overlay */
+body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 9999;
+  opacity: 0.025;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='1'/%3E%3C/svg%3E");
+  background-size: 128px;
+}

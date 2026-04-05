@@ -1,0 +1,55 @@
+---
+interface Props {
+  authors: { slug: string; name: string }[];
+  activeFilter?: string;
+}
+const { authors, activeFilter = 'all' } = Astro.props;
+---
+
+<div class="flex flex-wrap items-center gap-2" id="filter-bar">
+  <button class:list={['filter-btn', activeFilter === 'all' && 'active']} data-filter="all">
+    Всі
+  </button>
+  {authors.map((a) => (
+    <button
+      class:list={['filter-btn', activeFilter === a.slug && 'active']}
+      data-filter={a.slug}
+    >
+      {a.name}
+    </button>
+  ))}
+</div>
+
+<script>
+  function applyFilter(filter: string) {
+    const cards = document.querySelectorAll<HTMLElement>('[data-author]');
+    const btns  = document.querySelectorAll<HTMLButtonElement>('#filter-bar .filter-btn');
+
+    btns.forEach(b => b.classList.toggle('active', b.dataset.filter === filter));
+
+    cards.forEach(card => {
+      const show = filter === 'all' || card.dataset.author === filter;
+      card.style.display = show ? '' : 'none';
+    });
+
+    // update URL without page reload
+    const url = new URL(window.location.href);
+    if (filter === 'all') {
+      url.searchParams.delete('author');
+    } else {
+      url.searchParams.set('author', filter);
+    }
+    window.history.replaceState({}, '', url.toString());
+  }
+
+  // on load — apply filter from URL param if present
+  const params = new URLSearchParams(window.location.search);
+  const initial = params.get('author') ?? 'all';
+  if (initial !== 'all') applyFilter(initial);
+
+  document.getElementById('filter-bar')!.addEventListener('click', (e) => {
+    const btn = (e.target as HTMLElement).closest<HTMLButtonElement>('.filter-btn');
+    if (!btn) return;
+    applyFilter(btn.dataset.filter!);
+  });
+</script>

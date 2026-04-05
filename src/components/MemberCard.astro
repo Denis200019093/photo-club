@@ -1,0 +1,79 @@
+---
+import { Image } from 'astro:assets';
+import type { ImageMetadata } from 'astro';
+
+interface Props {
+  name: string;
+  slug: string;
+  role: string;
+  bio: string;
+  avatar: ImageMetadata;
+  instagram?: string;
+  joined: string;
+  photoCount: number;
+}
+
+const { name, slug, role, bio, avatar, instagram, joined, photoCount } = Astro.props;
+const joinedYear = new Date(joined).getFullYear();
+---
+
+<article class="group flex flex-col">
+
+  <a
+    href={`/?author=${slug}`}
+    class="relative overflow-hidden mb-5 block"
+    title={`Переглянути фото ${name}`}
+  >
+    <div class="relative overflow-hidden aspect-square">
+      <Image
+        src={avatar}
+        alt={name}
+        loading="lazy"
+        decoding="async"
+        format="webp"
+        quality={80}
+        width={600}
+        height={600}
+        class="w-full h-full object-cover object-top transition-transform duration-700 group-hover:scale-105"
+      />
+      <div class="absolute inset-0 bg-film-950/0 group-hover:bg-film-950/50 transition-all duration-500 flex items-center justify-center">
+        <span class="opacity-0 group-hover:opacity-100 transition-opacity duration-300 font-body text-film-50 text-sm tracking-widest uppercase border border-film-50/60 px-4 py-2">
+          Дивитись фото
+        </span>
+      </div>
+    </div>
+  </a>
+
+  <div class="flex-1">
+    <div class="flex items-start justify-between gap-2 mb-1">
+      <h3 class="font-display text-xl font-semibold text-film-950">{name}</h3>
+      {instagram && (
+        <a
+          href={`https://instagram.com/${instagram}`}
+          target="_blank"
+          rel="noopener"
+          class="text-film-400 hover:text-film-700 transition-colors mt-1 shrink-0"
+          aria-label={`Instagram ${name}`}
+        >
+          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+            <rect x="2" y="2" width="20" height="20" rx="5" ry="5"/>
+            <circle cx="12" cy="12" r="4"/>
+            <circle cx="17.5" cy="6.5" r="1" fill="currentColor" stroke="none"/>
+          </svg>
+        </a>
+      )}
+    </div>
+    <p class="font-mono text-xs text-film-400 uppercase tracking-widest mb-3">{role}</p>
+    <p class="font-body text-sm text-film-600 leading-relaxed mb-4">{bio}</p>
+    <div class="flex gap-6 pt-4 border-t border-film-200">
+      <a href={`/?author=${slug}`} class="hover:opacity-70 transition-opacity">
+        <span class="font-display text-2xl font-semibold text-film-800">{photoCount}</span>
+        <p class="font-mono text-xs text-film-400 uppercase tracking-widest">фото →</p>
+      </a>
+      <div>
+        <span class="font-display text-2xl font-semibold text-film-800">{joinedYear}</span>
+        <p class="font-mono text-xs text-film-400 uppercase tracking-widest">з клубу</p>
+      </div>
+    </div>
+  </div>
+</article>

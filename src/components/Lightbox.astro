@@ -1,0 +1,152 @@
+---
+// No props — fully driven by JS at runtime
+---
+
+<div
+  id="lightbox"
+  class="fixed inset-0 z-[9999] bg-film-950/95 backdrop-blur-sm flex items-center justify-center"
+  style="display: none !important;"
+  aria-modal="true"
+  role="dialog"
+  aria-label="Перегляд фото"
+>
+  <!-- Close -->
+  <button id="lb-close" class="absolute top-5 right-5 text-film-300 hover:text-film-50 transition-colors z-10" aria-label="Закрити">
+    <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+      <line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>
+    </svg>
+  </button>
+
+  <!-- Prev -->
+  <button id="lb-prev" class="absolute left-3 sm:left-5 top-1/2 -translate-y-1/2 text-film-300 hover:text-film-50 transition-colors z-10 p-2" aria-label="Попереднє">
+    <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+      <polyline points="15 18 9 12 15 6"/>
+    </svg>
+  </button>
+
+  <!-- Next -->
+  <button id="lb-next" class="absolute right-3 sm:right-5 top-1/2 -translate-y-1/2 text-film-300 hover:text-film-50 transition-colors z-10 p-2" aria-label="Наступне">
+    <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+      <polyline points="9 18 15 12 9 6"/>
+    </svg>
+  </button>
+
+  <!-- Content -->
+  <div class="relative flex flex-col items-center w-full px-14 sm:px-20 select-none">
+    <div class="w-full flex items-center justify-center">
+      <img
+        id="lb-img"
+        src=""
+        alt=""
+        class="max-w-full max-h-[80vh] object-contain shadow-2xl"
+        style="opacity:0; transition: opacity 0.25s ease;"
+      />
+    </div>
+    <div id="lb-caption" class="mt-4 text-center">
+      <p id="lb-title" class="font-display text-film-100 text-lg italic"></p>
+      <div class="flex items-center justify-center gap-4 mt-1">
+        <span id="lb-author" class="font-body text-film-400 text-sm"></span>
+        <span id="lb-category" class="font-mono text-film-500 text-xs uppercase tracking-widest"></span>
+      </div>
+    </div>
+    <p id="lb-counter" class="font-mono text-film-600 text-xs mt-3 tracking-widest"></p>
+  </div>
+</div>
+
+<script>
+  interface Slide { src: string; title: string; author: string; category: string; }
+
+  let slides: Slide[] = [];
+  let current = 0;
+  let isOpen = false;
+
+  const lb        = document.getElementById('lightbox')!;
+  const lbImg     = document.getElementById('lb-img') as HTMLImageElement;
+  const lbTitle   = document.getElementById('lb-title')!;
+  const lbAuthor  = document.getElementById('lb-author')!;
+  const lbCat     = document.getElementById('lb-category')!;
+  const lbCounter = document.getElementById('lb-counter')!;
+
+  function buildSlides(): Slide[] {
+    return Array.from(document.querySelectorAll<HTMLElement>('[data-author]'))
+      .filter(c => c.style.display !== 'none')
+      .map(card => {
+        // Astro <Image> renders an <img> inside the card — grab its rendered src (already WebP)
+        const img = card.querySelector('img');
+        return {
+          src:      img?.src ?? card.dataset.src ?? '',
+          title:    card.dataset.title      ?? '',
+          author:   card.dataset.authorName ?? '',
+          category: card.dataset.category   ?? '',
+        };
+      })
+      .filter(s => s.src);
+  }
+
+  function showSlide(index: number) {
+    current = (index + slides.length) % slides.length;
+    const s = slides[current];
+
+    lbImg.style.opacity = '0';
+    setTimeout(() => {
+      lbImg.src = s.src;
+      lbImg.alt = s.title;
+      lbTitle.textContent   = s.title;
+      lbAuthor.textContent  = s.author;
+      lbCat.textContent     = s.category;
+      lbCounter.textContent = `${current + 1} / ${slides.length}`;
+      lbImg.onload = () => { lbImg.style.opacity = '1'; };
+      if (lbImg.complete) lbImg.style.opacity = '1';
+    }, 180);
+
+    const single = slides.length <= 1;
+    document.getElementById('lb-prev')!.style.display = single ? 'none' : '';
+    document.getElementById('lb-next')!.style.display = single ? 'none' : '';
+  }
+
+  function open(index: number) {
+    slides = buildSlides();
+    if (!slides.length) return;
+    isOpen = true;
+    lb.style.removeProperty('display');
+    document.body.style.overflow = 'hidden';
+    showSlide(index);
+  }
+
+  function close() {
+    isOpen = false;
+    lb.style.display = 'none';
+    document.body.style.overflow = '';
+  }
+
+  // Click on gallery card
+  document.getElementById('gallery')?.addEventListener('click', (e) => {
+    const card = (e.target as HTMLElement).closest<HTMLElement>('[data-author]');
+    if (!card) return;
+    const visible = Array.from(document.querySelectorAll<HTMLElement>('[data-author]'))
+      .filter(c => c.style.display !== 'none');
+    const idx = visible.indexOf(card);
+    if (idx !== -1) open(idx);
+  });
+
+  document.getElementById('lb-close')!.addEventListener('click', close);
+  document.getElementById('lb-prev')!.addEventListener('click', () => showSlide(current - 1));
+  document.getElementById('lb-next')!.addEventListener('click', () => showSlide(current + 1));
+
+  document.addEventListener('keydown', (e) => {
+    if (!isOpen) return;
+    if (e.key === 'Escape')     close();
+    if (e.key === 'ArrowLeft')  showSlide(current - 1);
+    if (e.key === 'ArrowRight') showSlide(current + 1);
+  });
+
+  lb.addEventListener('click', (e) => { if (e.target === lb) close(); });
+
+  // Swipe
+  let touchX = 0;
+  lb.addEventListener('touchstart', (e) => { touchX = e.touches[0].clientX; }, { passive: true });
+  lb.addEventListener('touchend',   (e) => {
+    const dx = e.changedTouches[0].clientX - touchX;
+    if (Math.abs(dx) > 50) dx < 0 ? showSlide(current + 1) : showSlide(current - 1);
+  });
+</script>
