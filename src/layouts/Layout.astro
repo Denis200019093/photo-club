@@ -11,9 +11,9 @@ const { title, description = "Фотоклуб — спільнота закох
 const pathname = Astro.url.pathname;
 
 const nav = [
-  { href: "/photo-club", label: "Галерея" },
-  { href: "/photo-club/about", label: "Про нас" },
-  { href: "/photo-club/contact", label: "Контакти" },
+  { href: "/", label: "Галерея" },
+  { href: "/about", label: "Про нас" },
+  { href: "/contact", label: "Контакти" },
 ];
 ---
 
@@ -35,7 +35,7 @@ const nav = [
         class="max-w-7xl mx-auto px-6 h-16 flex items-center justify-between"
       >
         <a
-          href="/photo-club"
+          href="/"
           class="font-display text-xl font-semibold tracking-tight text-film-950 hover:text-film-700 transition-colors"
         >
           ƒ/клуб
