@@ -46,7 +46,7 @@ const joinedYear = new Date(joined).getFullYear();
 
   <div class="flex-1">
     <div class="flex items-start justify-between gap-2 mb-1">
-      <h3 class="font-display text-xl font-semibold text-film-950">{name}</h3>
+      <h3 class=" text-xl font-semibold text-film-950">{name}</h3>
       {instagram && (
         <a
           href={`https://instagram.com/${instagram}`}
@@ -63,16 +63,16 @@ const joinedYear = new Date(joined).getFullYear();
         </a>
       )}
     </div>
-    <p class="font-mono text-xs text-film-400 uppercase tracking-widest mb-3">{role}</p>
+    <p class=" text-xs text-film-400 uppercase tracking-widest mb-3">{role}</p>
     <p class="font-body text-sm text-film-600 leading-relaxed mb-4">{bio}</p>
     <div class="flex gap-6 pt-4 border-t border-film-200">
       <a href={`/?author=${slug}`} class="hover:opacity-70 transition-opacity">
-        <span class="font-display text-2xl font-semibold text-film-800">{photoCount}</span>
-        <p class="font-mono text-xs text-film-400 uppercase tracking-widest">фото →</p>
+        <span class=" text-2xl font-semibold text-film-800">{photoCount}</span>
+        <p class=" text-xs text-film-400 uppercase tracking-widest">фото →</p>
       </a>
       <div>
-        <span class="font-display text-2xl font-semibold text-film-800">{joinedYear}</span>
-        <p class="font-mono text-xs text-film-400 uppercase tracking-widest">з клубу</p>
+        <span class=" text-2xl font-semibold text-film-800">{joinedYear}</span>
+        <p class=" text-xs text-film-400 uppercase tracking-widest">з клубу</p>
       </div>
     </div>
   </div>

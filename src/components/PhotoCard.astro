@@ -34,11 +34,11 @@ const { title, author, authorName, image, category } = Astro.props;
   <!-- Hover overlay -->
   <div class="absolute inset-0 bg-film-950/0 group-hover:bg-film-950/45 transition-all duration-500 flex items-end pointer-events-none">
     <div class="w-full p-4 translate-y-full group-hover:translate-y-0 transition-transform duration-500">
-      <p class="font-display text-film-50 text-base italic leading-tight">{title}</p>
+      <p class=" text-film-50 text-base italic leading-tight">{title}</p>
       <div class="flex items-center justify-between mt-1">
         <span class="font-body text-film-200 text-xs">{authorName}</span>
         {category && (
-          <span class="font-mono text-film-300 text-xs uppercase tracking-widest">{category}</span>
+          <span class=" text-film-300 text-xs uppercase tracking-widest">{category}</span>
         )}
       </div>
     </div>
